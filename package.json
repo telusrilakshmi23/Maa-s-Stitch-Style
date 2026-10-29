@@ -1,0 +1,23 @@
+{
+  "name": "maas-stitch-and-style",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "pnpm --parallel --filter @maas/server --filter @maas/client dev",
+    "build": "pnpm --filter @maas/server build && pnpm --filter @maas/client build",
+    "start": "pnpm --filter @maas/server start",
+    "db:generate": "pnpm --filter @maas/server db:generate",
+    "db:migrate": "pnpm --filter @maas/server db:migrate",
+    "db:seed": "pnpm --filter @maas/server db:seed",
+    "test": "pnpm --filter @maas/server test",
+    "typecheck": "pnpm --filter @maas/server exec tsc -p tsconfig.json --noEmit && pnpm --filter @maas/client exec tsc -b --pretty false"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "typescript": "^5.7.3"
+  },
+  "engines": {
+    "node": ">=20.19 <25"
+  },
+  "packageManager": "pnpm@11.25.0"
+}

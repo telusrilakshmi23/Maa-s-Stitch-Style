@@ -1,0 +1,39 @@
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+.env
+.env.*
+!.env.example
+coverage/
+*.log
+work/
+.DS_Store
+*.tsbuildinfo
+
+# Local credentials and certificates
+secrets/
+**/secrets/
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+
+# Private uploads and local customer data
+private/
+**/private/
+uploads/
+**/uploads/
+customer-data/
+**/customer-data/
+storage/
+**/storage/
+
+# Local database files and backups
+*.sqlite
+*.sqlite3
+*.db
+*.dump
+*.backup
+*.bak

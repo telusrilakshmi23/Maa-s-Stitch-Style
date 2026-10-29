@@ -1,0 +1,160 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ProductKind {
+  READY_MADE
+  MADE_TO_ORDER
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  IN_PROGRESS
+  READY
+  COMPLETED
+  CANCELLED
+}
+
+enum CustomStatus {
+  PENDING_REVIEW
+  CONTACTED
+  QUOTED
+  ACCEPTED
+  IN_PROGRESS
+  READY
+  COMPLETED
+  REJECTED
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Product {
+  id          String        @id @default(cuid())
+  name        String
+  description String        @db.Text
+  price       Decimal       @db.Decimal(10, 2)
+  category    String
+  collection  String?
+  fabric      String?
+  colour      String?
+  sizes       String[]      @default([])
+  stock       Int           @default(0)
+  kind        ProductKind   @default(READY_MADE)
+  featured    Boolean       @default(false)
+  newArrival  Boolean       @default(false)
+  active      Boolean       @default(true)
+  images      ProductImage[]
+  orderItems  OrderItem[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([active, category])
+  @@index([featured, active])
+}
+
+model ProductImage {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  storageKey String
+  url       String
+  alt       String?
+  sortOrder Int     @default(0)
+
+  @@index([productId])
+}
+
+model ReadyOrder {
+  id           String      @id @default(cuid())
+  reference    String      @unique
+  customerName String
+  phone        String
+  email        String?
+  deliveryArea String
+  instructions String?
+  status       OrderStatus @default(PENDING)
+  internalNotes String?
+  items        OrderItem[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([status, createdAt])
+}
+
+model OrderItem {
+  id          String     @id @default(cuid())
+  orderId     String
+  order       ReadyOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId   String?
+  product     Product?   @relation(fields: [productId], references: [id], onDelete: SetNull)
+  productName String
+  size        String
+  quantity    Int
+  unitPrice   Decimal    @db.Decimal(10, 2)
+}
+
+model CustomRequest {
+  id                 String         @id @default(cuid())
+  reference          String         @unique
+  customerName       String
+  phone              String
+  email              String?
+  garmentType        String
+  description        String         @db.Text
+  fabric             String?
+  colour             String?
+  neckDesign         String?
+  sleeveDesign       String?
+  preferredSize      String?
+  measurements       Json?
+  quantity           Int            @default(1)
+  budget             String?
+  preferredDate      DateTime?
+  deliveryArea       String
+  instructions       String?
+  quotedPrice        Decimal?       @db.Decimal(10, 2)
+  agreedDeliveryDate DateTime?
+  status             CustomStatus   @default(PENDING_REVIEW)
+  internalNotes      String?
+  images             ReferenceImage[]
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+
+  @@index([status, createdAt])
+}
+
+model ReferenceImage {
+  id        String        @id @default(cuid())
+  requestId String
+  request   CustomRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  storageKey String
+  mimeType  String
+  size      Int
+  createdAt DateTime      @default(now())
+}
+
+model BusinessSettings {
+  id            Int      @id @default(1)
+  name          String   @default("Maa's Stitch & Style")
+  description   String   @default("Stitched with Love. Styled by You.")
+  whatsappNumber String?
+  phone         String?
+  email         String?
+  instagramUrl  String?
+  deliveryAreas String[] @default(["Rajahmundry"])
+  pickupInfo    String?
+  currency      String   @default("INR")
+  updatedAt     DateTime @updatedAt
+}

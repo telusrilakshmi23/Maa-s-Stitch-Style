@@ -1,0 +1,6 @@
+{
+  "installCommand": "pnpm install --frozen-lockfile",
+  "buildCommand": "pnpm --filter @maas/client build",
+  "outputDirectory": "client/dist",
+  "framework": "vite"
+}
